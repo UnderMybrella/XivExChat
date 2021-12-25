@@ -6,7 +6,8 @@ namespace EventChat
     using System.Diagnostics.CodeAnalysis;
     using Dalamud.Game.Text;
 
-    [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1602", MessageId = "Enumeration items should be documented", Justification = "Lazy")]
+    [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1602",
+        MessageId = "Enumeration items should be documented", Justification = "Lazy")]
     public enum ExChatType : ushort
     {
         [ExChatTypeAttribute("Say", "Cloud Strife: Never mind...", 700)]
@@ -358,11 +359,303 @@ namespace EventChat
             ("Chat",
                 new[]
                 {
-                    ExChatType.Say, ExChatType.Yell, ExChatType.Shout, ExChatType.TellIncoming, ExChatType.Party,
-                    ExChatType.Alliance, ExChatType.FreeCompany,
+                    ExChatType.Say,
+                    ExChatType.Yell,
+                    ExChatType.Shout,
+                    ExChatType.TellIncoming,
+                    ExChatType.TellOutgoing,
+                    ExChatType.Party,
+                    ExChatType.Alliance,
+                    ExChatType.FreeCompany,
+                    ExChatType.NoviceNetwork,
+                    ExChatType.StandardEmotes,
+                    ExChatType.CustomEmotes,
                 }),
+
+            ("Linkshells",
+                new[]
+                {
+                    ExChatType.CrossWorldLinkshell1,
+                    ExChatType.CrossWorldLinkshell2,
+                    ExChatType.CrossWorldLinkshell3,
+                    ExChatType.CrossWorldLinkshell4,
+                    ExChatType.CrossWorldLinkshell5,
+                    ExChatType.CrossWorldLinkshell6,
+                    ExChatType.CrossWorldLinkshell7,
+                    ExChatType.CrossWorldLinkshell8,
+                    ExChatType.Linkshell1,
+                    ExChatType.Linkshell2,
+                    ExChatType.Linkshell3,
+                    ExChatType.Linkshell4,
+                    ExChatType.Linkshell5,
+                    ExChatType.Linkshell6,
+                    ExChatType.Linkshell7,
+                    ExChatType.Linkshell8,
+                }),
+
+            ("Battle (Subject: You)", new[]
+            {
+                ExChatType.DamageDealtByYou,
+                ExChatType.FailedAttacksByYou,
+                ExChatType.ActionsInitiatedByYou,
+                ExChatType.ItemsUsedByYou,
+                ExChatType.ItemUsedByYouReady,
+                ExChatType.EffectsOfHealingSpellsCastByYou,
+                ExChatType.BeneficialEffectsGrantedByYou,
+                ExChatType.DetrimentalEffectsInflictedByYou,
+                ExChatType.DamageYouAreDealt,
+                ExChatType.FailedAttacksOnYou,
+                ExChatType.ActionsUsedOnYou,
+                ExChatType.ItemsUsedOnYou,
+                ExChatType.EffectsOfHealingSpellsCastOnYou,
+                ExChatType.BeneficialEffectsGrantedToYou,
+                ExChatType.DetrimentalEffectsInflictedOnYou,
+                ExChatType.BeneficialEffectsOnYouEnding,
+                ExChatType.DetrimentalEffectsOnYouEnding,
+            }),
+            
+            ("Battle (Subject: Party Member)", new[]
+            {
+                ExChatType.DamageDealtByPartyMembers,
+                ExChatType.FailedAttacksByPartyMembers,
+                ExChatType.ActionsInitiatedByPartyMembers,
+                ExChatType.ItemsUsedByPartyMembers,
+                ExChatType.EffectsOfHealingSpellsCastByPartyMembers,
+                ExChatType.BeneficialEffectsGrantedByPartyMembers,
+                ExChatType.DetrimentalEffectsInflictedByPartyMembers,
+                ExChatType.DamagePartyMembersAreDealt,
+                ExChatType.FailedAttacksOnPartyMembers,
+                ExChatType.ActionsUsedOnPartyMembers,
+                ExChatType.ItemsUsedOnPartyMembers,
+                ExChatType.EffectsOfHealingSpellsCastOnPartyMembers,
+                ExChatType.BeneficialEffectsGrantedToPartyMembers,
+                ExChatType.DetrimentalEffectsInflictedOnPartyMembers,
+                ExChatType.BeneficialEffectsOnPartyMembersEnding,
+                ExChatType.DetrimentalEffectsOnPartyMembersEnding,
+            }),
+            
+            ("Battle (Subject: Alliance Member)", new[]
+            {
+                ExChatType.DamageDealtByAllianceMembers,
+                ExChatType.FailedAttacksByAllianceMembers,
+                ExChatType.ActionsInitiatedByAllianceMembers,
+                ExChatType.ItemsUsedByAllianceMembers,
+                ExChatType.EffectsOfHealingSpellsCastByAllianceMembers,
+                ExChatType.BeneficialEffectsGrantedByAllianceMembers,
+                ExChatType.DetrimentalEffectsInflictedByAllianceMembers,
+                ExChatType.DamageAllianceMembersAreDealt,
+                ExChatType.FailedAttacksOnAllianceMembers,
+                ExChatType.ActionsUsedOnAllianceMembers,
+                ExChatType.ItemsUsedOnAllianceMembers,
+                ExChatType.EffectsOfHealingSpellsCastOnAllianceMembers,
+                ExChatType.BeneficialEffectsGrantedToAllianceMembers,
+                ExChatType.DetrimentalEffectsInflictedOnAllianceMembers,
+                ExChatType.BeneficialEffectsOnAllianceMembersEnding,
+                ExChatType.DetrimentalEffectsOnAllianceMembersEnding,
+            }),
+            
+            ("Battle (Subject: Other PC)", new[]
+            {
+                ExChatType.DamageDealtByOthers,
+                ExChatType.FailedAttacksByOthers,
+                ExChatType.ActionsInitiatedByOthers,
+                ExChatType.ItemsUsedByOthers,
+                ExChatType.EffectsOfHealingSpellsCastByOthers,
+                ExChatType.BeneficialEffectsGrantedByOthers,
+                ExChatType.DetrimentalEffectsInflictedByOthers,
+                ExChatType.DamageOthersAreDealt,
+                ExChatType.FailedAttacksOnOthers,
+                ExChatType.ActionsUsedOnOthers,
+                ExChatType.ItemsUsedOnOthers,
+                ExChatType.EffectsOfHealingSpellsCastOnOthers,
+                ExChatType.BeneficialEffectsGrantedToOthers,
+                ExChatType.DetrimentalEffectsInflictedOnOthers,
+                ExChatType.BeneficialEffectsOnOthersEnding,
+                ExChatType.DetrimentalEffectsOnOthersEnding,
+            }),
+            
+            ("Battle (Subject: Engaged Enemy)", new[]
+            {
+                ExChatType.DamageDealtByEngagedEnemies,
+                ExChatType.FailedAttacksByEngagedEnemies,
+                ExChatType.ActionsInitiatedByEngagedEnemies,
+                ExChatType.ItemsUsedByEngagedEnemies,
+                ExChatType.EffectsOfHealingSpellsCastByEngagedEnemies,
+                ExChatType.BeneficialEffectsGrantedByEngagedEnemies,
+                ExChatType.DetrimentalEffectsInflictedByEngagedEnemies,
+                ExChatType.DamageEngagedEnemiesAreDealt,
+                ExChatType.FailedAttacksOnEngagedEnemies,
+                ExChatType.ActionsUsedOnEngagedEnemies,
+                ExChatType.ItemsUsedOnEngagedEnemies,
+                ExChatType.EffectsOfHealingSpellsCastOnEngagedEnemies,
+                ExChatType.BeneficialEffectsGrantedToEngagedEnemies,
+                ExChatType.DetrimentalEffectsInflictedOnEngagedEnemies,
+                ExChatType.BeneficialEffectsOnEngagedEnemiesEnding,
+                ExChatType.DetrimentalEffectsOnEngagedEnemiesEnding,
+            }),
+            
+            ("Battle (Subject: Unengaged Enemies)", new[]
+            {
+                ExChatType.DamageDealtByUnengagedEnemy,
+                ExChatType.FailedAttacksByUnengagedEnemy,
+                ExChatType.ActionsInitiatedByUnengagedEnemy,
+                ExChatType.ItemsUsedByUnengagedEnemy,
+                ExChatType.EffectsOfHealingSpellsCastByUnengagedEnemy,
+                ExChatType.BeneficialEffectsGrantedByUnengagedEnemy,
+                ExChatType.DetrimentalEffectsInflictedByUnengagedEnemy,
+                ExChatType.DamageUnengagedEnemyAreDealt,
+                ExChatType.FailedAttacksOnUnengagedEnemy,
+                ExChatType.ActionsUsedOnUnengagedEnemy,
+                ExChatType.ItemsUsedOnUnengagedEnemy,
+                ExChatType.EffectsOfHealingSpellsCastOnUnengagedEnemy,
+                ExChatType.BeneficialEffectsGrantedToUnengagedEnemy,
+                ExChatType.DetrimentalEffectsInflictedOnUnengagedEnemy,
+                ExChatType.BeneficialEffectsOnUnengagedEnemyEnding,
+                ExChatType.DetrimentalEffectsOnUnengagedEnemyEnding,
+            }),
+            
+            ("Battle (Subject: Friendly NPCs)", new[]
+            {
+                ExChatType.DamageDealtByFriendlyNPCs,
+                ExChatType.FailedAttacksByFriendlyNPCs,
+                ExChatType.ActionsInitiatedByFriendlyNPCs,
+                ExChatType.ItemsUsedByFriendlyNPCs,
+                ExChatType.EffectsOfHealingSpellsCastByFriendlyNPCs,
+                ExChatType.BeneficialEffectsGrantedByFriendlyNPCs,
+                ExChatType.DetrimentalEffectsInflictedByFriendlyNPCs,
+                ExChatType.DamageFriendlyNPCsAreDealt,
+                ExChatType.FailedAttacksOnFriendlyNPCs,
+                ExChatType.ActionsUsedOnFriendlyNPCs,
+                ExChatType.ItemsUsedOnFriendlyNPCs,
+                ExChatType.EffectsOfHealingSpellsCastOnFriendlyNPCs,
+                ExChatType.BeneficialEffectsGrantedToFriendlyNPCs,
+                ExChatType.DetrimentalEffectsInflictedOnFriendlyNPCs,
+                ExChatType.BeneficialEffectsOnFriendlyNPCsEnding,
+                ExChatType.DetrimentalEffectsOnFriendlyNPCsEnding,
+            }),
+            
+            ("Battle (Subject: Pets/Companions)", new[]
+            {
+                ExChatType.DamageDealtByPetsAndCompanions,
+                ExChatType.FailedAttacksByPetsAndCompanions,
+                ExChatType.ActionsInitiatedByPetsAndCompanions,
+                ExChatType.ItemsUsedByPetsAndCompanions,
+                ExChatType.EffectsOfHealingSpellsCastByPetsAndCompanions,
+                ExChatType.BeneficialEffectsGrantedByPetsAndCompanions,
+                ExChatType.DetrimentalEffectsInflictedByPetsAndCompanions,
+                ExChatType.DamagePetsAndCompanionsAreDealt,
+                ExChatType.FailedAttacksOnPetsAndCompanions,
+                ExChatType.ActionsUsedOnPetsAndCompanions,
+                ExChatType.ItemsUsedOnPetsAndCompanions,
+                ExChatType.EffectsOfHealingSpellsCastOnPetsAndCompanions,
+                ExChatType.BeneficialEffectsGrantedToPetsAndCompanions,
+                ExChatType.DetrimentalEffectsInflictedOnPetsAndCompanions,
+                ExChatType.BeneficialEffectsOnPetsAndCompanionsEnding,
+                ExChatType.DetrimentalEffectsOnPetsAndCompanionsEnding,
+            }),
+            
+            ("Battle (Subject: Pets/Companions (Party))", new[]
+            {
+                ExChatType.DamageDealtByPartyMembersPetsAndCompanions,
+                ExChatType.FailedAttacksByPartyMembersPetsAndCompanions,
+                ExChatType.ActionsInitiatedByPartyMembersPetsAndCompanions,
+                ExChatType.ItemsUsedByPartyMembersPetsAndCompanions,
+                ExChatType.EffectsOfHealingSpellsCastByPartyMembersPetsAndCompanions,
+                ExChatType.BeneficialEffectsGrantedByPartyMembersPetsAndCompanions,
+                ExChatType.DetrimentalEffectsInflictedByPartyMembersPetsAndCompanions,
+                ExChatType.DamagePartyMembersPetsAndCompanionsAreDealt,
+                ExChatType.FailedAttacksOnPartyMembersPetsAndCompanions,
+                ExChatType.ActionsUsedOnPartyMembersPetsAndCompanions,
+                ExChatType.ItemsUsedOnPartyMembersPetsAndCompanions,
+                ExChatType.EffectsOfHealingSpellsCastOnPartyMembersPetsAndCompanions,
+                ExChatType.BeneficialEffectsGrantedToPartyMembersPetsAndCompanions,
+                ExChatType.DetrimentalEffectsInflictedOnPartyMembersPetsAndCompanions,
+                ExChatType.BeneficialEffectsOnPartyMembersPetsAndCompanionsEnding,
+                ExChatType.DetrimentalEffectsOnPartyMembersPetsAndCompanionsEnding,
+            }),
+            
+            ("Battle (Subject: Pets/Companions (Alliance))", new[]
+            {
+                ExChatType.DamageDealtByAllianceMembersPetsAndCompanions,
+                ExChatType.FailedAttacksByAllianceMembersPetsAndCompanions,
+                ExChatType.ActionsInitiatedByAllianceMembersPetsAndCompanions,
+                ExChatType.ItemsUsedByAllianceMembersPetsAndCompanions,
+                ExChatType.EffectsOfHealingSpellsCastByAllianceMembersPetsAndCompanions,
+                ExChatType.BeneficialEffectsGrantedByAllianceMembersPetsAndCompanions,
+                ExChatType.DetrimentalEffectsInflictedByAllianceMembersPetsAndCompanions,
+                ExChatType.DamageAllianceMembersPetsAndCompanionsAreDealt,
+                ExChatType.FailedAttacksOnAllianceMembersPetsAndCompanions,
+                ExChatType.ActionsUsedOnAllianceMembersPetsAndCompanions,
+                ExChatType.ItemsUsedOnAllianceMembersPetsAndCompanions,
+                ExChatType.EffectsOfHealingSpellsCastOnAllianceMembersPetsAndCompanions,
+                ExChatType.BeneficialEffectsGrantedToAllianceMembersPetsAndCompanions,
+                ExChatType.DetrimentalEffectsInflictedOnAllianceMembersPetsAndCompanions,
+                ExChatType.BeneficialEffectsOnAllianceMembersPetsAndCompanionsEnding,
+                ExChatType.DetrimentalEffectsOnAllianceMembersPetsAndCompanionsEnding,
+            }),
+            
+            ("Battle (Subject: Pets/Companions (Other PC))", new[]
+            {
+                ExChatType.DamageDealtByOthersPetsAndCompanions,
+                ExChatType.FailedAttacksByOthersPetsAndCompanions,
+                ExChatType.ActionsInitiatedByOthersPetsAndCompanions,
+                ExChatType.ItemsUsedByOthersPetsAndCompanions,
+                ExChatType.EffectsOfHealingSpellsCastByOthersPetsAndCompanions,
+                ExChatType.BeneficialEffectsGrantedByOthersPetsAndCompanions,
+                ExChatType.DetrimentalEffectsInflictedByOthersPetsAndCompanions,
+                ExChatType.DamageOthersPetsAndCompanionsAreDealt,
+                ExChatType.FailedAttacksOnOthersPetsAndCompanions,
+                ExChatType.ActionsUsedOnOthersPetsAndCompanions,
+                ExChatType.ItemsUsedOnOthersPetsAndCompanions,
+                ExChatType.EffectsOfHealingSpellsCastOnOthersPetsAndCompanions,
+                ExChatType.BeneficialEffectsGrantedToOthersPetsAndCompanions,
+                ExChatType.DetrimentalEffectsInflictedOnOthersPetsAndCompanions,
+                ExChatType.BeneficialEffectsOnOthersPetsAndCompanionsEnding,
+                ExChatType.DetrimentalEffectsOnOthersPetsAndCompanionsEnding,
+            }),
+            
+            ("Notifications", new[]
+            {
+                ExChatType.NoviceNetworkNotifications,
+                ExChatType.FreeCompanyMemberLoginNotifications,
+                ExChatType.PvPTeamMemberLoginNotifications,
+                ExChatType.PeriodicRecruitmentNotifications,
+                ExChatType.AlarmNotifications,
+            }),
+            
+            ("System Messages", new[]
+            {
+                ExChatType.SystemMessages,
+                ExChatType.OwnBattleSystemMessages,
+                ExChatType.OthersBattleSystemMessages,
+                ExChatType.GatheringSystemMessages,
+                ExChatType.ErrorMessages,
+                ExChatType.OwnProgressionMessages,
+                ExChatType.PartyMembersProgressionMessages,
+                ExChatType.OthersProgressionMessages,
+                ExChatType.OwnLootMessages,
+                ExChatType.OthersLootMessages,
+                ExChatType.OwnSynthesisMessages,
+                ExChatType.OthersSynthesisMessages,
+                ExChatType.OwnGatheringMessages,
+                ExChatType.OthersFishingMessages,
+                ExChatType.SignMessagesForPCTargets,
+                ExChatType.RandomNumberMessages,
+                ExChatType.CurrentOrchestrionTrackMessages,
+            }),
+            
+            ("Announcements", new[]
+            {
+                ExChatType.Echo,
+                ExChatType.FreeCompanyAnnouncements,
+                ExChatType.PvPTeamAnnouncements,
+                ExChatType.NPCDialogue,
+                ExChatType.NPCDialogueAnnouncements,
+                ExChatType.LootNotices,
+                ExChatType.MessageBookAlert,
+            }),
         };
-        
+
         public static ExChatTypeAttribute? ExChatAttribute(this ExChatType value)
         {
             Type type = value.GetType();

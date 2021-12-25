@@ -673,107 +673,133 @@ namespace EventChat
             }
         }
 
+        private (string Name, ExChatType[] Types) selectedGroup = XivChatTypes.TypeGroups[0];
+
         private void DrawEditTypedChatTab(ChatTabWithTypeFilter tab)
         {
-            (ExChatType type, ExChatTypeAttribute? attr)? hovered = null;
+            (ExChatType Type, ExChatTypeAttribute? ttr)? hovered = null;
             var refilter = false;
 
-            foreach (var (name, types) in XivChatTypes.TypeGroups)
+            if (ImGui.BeginCombo("##ChatGroups", this.selectedGroup.Name))
             {
-                ImGuiChatHelpers.BeginGroupPanel(name, new Vector2(16, 16));
-
-                foreach (var type in types)
+                foreach ((string Name, ExChatType[] Types) group in XivChatTypes.TypeGroups)
                 {
-                    ImGui.BeginGroup();
-                    var attr = type.ExChatAttribute();
-                    bool filterEnabled = tab.AcceptedTypes.Contains(type);
-                    Vector4 color = tab.ChatColours.GetValueOrDefault(type, null) ?? Vector4.Zero;
-
-                    if (color != Vector4.Zero)
+                    if (ImGui.Selectable(group.Name))
                     {
-                        ImGui.PushStyleColor(ImGuiCol.Text, color);
-                    }
-
-                    if (ImGui.Checkbox(attr?.DisplayName ?? ((int) type).ToString(), ref filterEnabled))
-                    {
-                        refilter = true;
-
-                        if (filterEnabled)
-                        {
-                            tab.AcceptedTypes.Add(type);
-                        }
-                        else
-                        {
-                            tab.AcceptedTypes.Remove(type);
-                        }
-                    }
-
-                    if (color != Vector4.Zero)
-                    {
-                        ImGui.PopStyleColor();
-                    }
-
-                    ImGui.EndGroup();
-
-                    if (ImGui.IsItemHovered())
-                    {
-                        var desc = attr?.Description;
-                        if (desc != null) ImGui.SetTooltip(desc);
-
-                        hovered = (type, attr);
-                    }
-
-                    if (ImGui.BeginPopupContextItem($"##Type{type}"))
-                    {
-                        var enabled = color != Vector4.Zero;
-
-                        if (ImGui.Checkbox("Custom Colour", ref enabled))
-                        {
-                            if (!enabled)
-                            {
-                                tab.ChatColours.Remove(type);
-                            }
-                            else
-                            {
-                                color = this.messageColours.GetValueOrDefault(type) ?? new Vector4(1f, 1f, 1f, 1f);
-                                tab.ChatColours[type] = color;
-                            }
-                        }
-
-                        if (enabled)
-                        {
-                            if (ImGui.ColorPicker4(
-                                    $"###ColorPicker{type}",
-                                    ref color,
-                                    ImGuiColorEditFlags.NoSmallPreview | ImGuiColorEditFlags.NoSidePreview |
-                                    ImGuiColorEditFlags.AlphaPreview))
-                            {
-                                tab.ChatColours[type] = color;
-                            }
-                        }
-
-                        ImGui.EndPopup();
+                        this.selectedGroup = group;
                     }
                 }
 
-                ImGuiChatHelpers.EndGroupPanel();
+                ImGui.EndCombo();
             }
+
+            var groupStart = ImGui.GetCursorPos();
+            ImGuiChatHelpers.BeginGroupPanel(this.selectedGroup.Name, new Vector2(16, 16));
+
+            foreach (var type in this.selectedGroup.Types)
+            {
+                ImGui.BeginGroup();
+
+                var attr = type.ExChatAttribute();
+                bool filterEnabled = tab.AcceptedTypes.Contains(type);
+                Vector4 color = tab.ChatColours.GetValueOrDefault(type, null) ?? Vector4.Zero;
+
+                if (color != Vector4.Zero)
+                {
+                    ImGui.PushStyleColor(ImGuiCol.Text, color);
+                }
+
+                if (ImGui.Checkbox(attr?.DisplayName ?? ((int) type).ToString(), ref filterEnabled))
+                {
+                    refilter = true;
+
+                    if (filterEnabled)
+                    {
+                        tab.AcceptedTypes.Add(type);
+                    }
+                    else
+                    {
+                        tab.AcceptedTypes.Remove(type);
+                    }
+                }
+
+                if (color != Vector4.Zero)
+                {
+                    ImGui.PopStyleColor();
+                }
+
+                ImGui.EndGroup();
+
+                if (ImGui.IsItemHovered())
+                {
+                    var desc = attr?.Description;
+                    if (desc != null) ImGui.SetTooltip(desc);
+
+                    hovered = (Type: type, ttr: attr);
+                }
+
+                if (ImGui.BeginPopupContextItem($"##Type{type}"))
+                {
+                    var enabled = color != Vector4.Zero;
+
+                    if (ImGui.Checkbox("Custom Colour", ref enabled))
+                    {
+                        if (!enabled)
+                        {
+                            tab.ChatColours.Remove(type);
+                        }
+                        else
+                        {
+                            color = this.messageColours.GetValueOrDefault(type) ??
+                                    new Vector4(1f, 1f, 1f, 1f);
+                            tab.ChatColours[type] = color;
+                        }
+                    }
+
+                    if (enabled)
+                    {
+                        if (ImGui.ColorPicker4(
+                                $"###ColorPicker{type}",
+                                ref color,
+                                ImGuiColorEditFlags.NoSmallPreview |
+                                ImGuiColorEditFlags.NoSidePreview |
+                                ImGuiColorEditFlags.AlphaPreview))
+                        {
+                            tab.ChatColours[type] = color;
+                        }
+                    }
+
+                    ImGui.EndPopup();
+                }
+            }
+            
+            ImGuiChatHelpers.EndGroupPanel();
+            var width = ImGui.GetItemRectSize().X;
+            var groupEnd = ImGui.GetCursorPos();
+            
+            ImGui.SetCursorPos(groupStart + new Vector2(16 + width, 0));
+            
+            ImGuiChatHelpers.BeginGroupPanel("Options", new Vector2(16, 16));
+            
+            ImGuiChatHelpers.EndGroupPanel();
+            
+            ImGui.SetCursorPos(groupEnd);
 
             ImGuiChatHelpers.BeginGroupPanel("Info", new Vector2(16, 16));
 
             if (hovered != null)
             {
-                var colour = tab.ChatColours.GetValueOrDefault(hovered.Value.type, null) ??
-                             this.messageColours.GetValueOrDefault(hovered.Value.type, null);
+                var colour = tab.ChatColours.GetValueOrDefault(hovered.Value.Type, null) ??
+                             this.messageColours.GetValueOrDefault(hovered.Value.Type, null);
                 if (colour != null)
                 {
                     ImGui.PushStyleColor(ImGuiCol.Text, colour.Value);
-                    ImGui.Text(hovered?.attr?.Example ?? string.Empty);
+                    ImGui.Text(hovered?.ttr?.Example ?? string.Empty);
                     ImGui.PopStyleColor();
                 }
                 else
                 {
-                    ImGui.Text(hovered?.attr?.Example ?? string.Empty);
+                    ImGui.Text(hovered?.ttr?.Example ?? string.Empty);
                 }
             }
 
