@@ -13,9 +13,9 @@ namespace EventChat
         public void DisplayIn(ChatDisplay display, ChatTab inTab, ChatWindow inWindow);
     }
 
-    public record XivChatEntryWithPayloads(XivChatEntry Entry, IChatDisplayPayload[] Payloads);
+    public record XivChatEntryWithPayloads(XivChatEntry Entry, IChatDisplayPayload[] Payloads, ExChatType Type);
 
-    public record ChatDisplayPayloadTypeStart(XivChatType Type, Vector4? DefaultColour) : IChatDisplayPayload
+    public record ChatDisplayPayloadTypeStart(ExChatType Type, Vector4? DefaultColour) : IChatDisplayPayload
     {
         public void DisplayIn(ChatDisplay display, ChatTab inTab, ChatWindow inWindow)
         {
@@ -28,7 +28,7 @@ namespace EventChat
         }
     }
 
-    public record ChatDisplayPayloadTypeEnd(XivChatType Type, Vector4? DefaultColour) : IChatDisplayPayload
+    public record ChatDisplayPayloadTypeEnd(ExChatType Type, Vector4? DefaultColour) : IChatDisplayPayload
     {
         public void DisplayIn(ChatDisplay display, ChatTab inTab, ChatWindow inWindow)
         {
@@ -181,12 +181,12 @@ namespace EventChat
     {
         public static void AddTypeBeginningPayload(
             this List<IChatDisplayPayload> list,
-            XivChatType type,
+            ExChatType type,
             Vector4? defaultColour) => list.Add(new ChatDisplayPayloadTypeStart(type, defaultColour));
 
         public static void AddTypeEndingPayload(
             this List<IChatDisplayPayload> list,
-            XivChatType type,
+            ExChatType type,
             Vector4? defaultColour) => list.Add(new ChatDisplayPayloadTypeEnd(type, defaultColour));
 
         public static void AddUiForegroundPayload(this List<IChatDisplayPayload> list, Vector4 colour) =>

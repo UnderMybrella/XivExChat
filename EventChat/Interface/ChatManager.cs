@@ -19,7 +19,7 @@ namespace EventChat
             this._plugin = plugin;
 
             this.WindowSystem = new WindowSystem("EventChat");
-            this.chatWindow = new ChatWindow(plugin) { IsOpen = false };
+            this.chatWindow = new ChatWindow(plugin) { IsOpen = true };
             
             this.WindowSystem.AddWindow(this.chatWindow);
             

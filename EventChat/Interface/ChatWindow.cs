@@ -76,7 +76,7 @@ namespace EventChat
         private readonly List<ChatTab> chatTabs = new();
         private readonly object renderLock = new();
 
-        private Dictionary<XivChatType, Vector4?> messageColours = new();
+        private Dictionary<ExChatType, Vector4?> messageColours = new();
 
         public ChatWindow(EventChatPlugin plugin)
             : base("Game Chat")
@@ -90,7 +90,7 @@ namespace EventChat
             var colours = plugin.DataManager.GetExcelSheet<UIColor>();
             if (colours != null)
             {
-                void AttemptRegister(XivChatType type, uint rowId)
+                void AttemptRegister(ExChatType type, uint rowId)
                 {
                     var colour = colours!.GetRow(rowId);
 
@@ -100,31 +100,49 @@ namespace EventChat
                     }
                 }
 
-                AttemptRegister(XivChatType.ErrorMessage, 704);
-                AttemptRegister(XivChatType.Party, 576);
-                AttemptRegister(XivChatType.Alliance, 500);
-                AttemptRegister(XivChatType.Say, 700);
-                AttemptRegister(XivChatType.Yell, 573);
-                AttemptRegister(XivChatType.Shout, 557);
-                AttemptRegister(XivChatType.FreeCompany, 69);
-                AttemptRegister(Event, 61);
+                foreach (var type in Enum.GetValues<ExChatType>())
+                {
+                    var attr = type.ExChatAttribute();
 
-                AttemptRegister(XivChatType.TellIncoming, 537);
-                AttemptRegister(XivChatType.TellOutgoing, 537);
+                    if (attr != null)
+                    {
+                        var luminaRowId = attr.DefaultLuminaRow;
+                        if (luminaRowId != null)
+                        {
+                            var uiColour = colours!.GetRow(luminaRowId.Value);
+                            if (uiColour != null)
+                            {
+                                this.messageColours[type] = uiColour.UiForegroundAsVector4();
+                            }
+                        }
+                    }
+                }
 
-                AttemptRegister(XivChatType.Notice, 708);
-                AttemptRegister(XivChatType.Urgent, 508);
+                AttemptRegister(ExChatType.ErrorMessages, 704);
+                AttemptRegister(ExChatType.Party, 576);
+                AttemptRegister(ExChatType.Alliance, 500);
+                AttemptRegister(ExChatType.Say, 700);
+                AttemptRegister(ExChatType.Yell, 573);
+                AttemptRegister(ExChatType.Shout, 557);
+                AttemptRegister(ExChatType.FreeCompany, 69);
+                AttemptRegister(ExChatType.Event, 61);
 
-                AttemptRegister(XivChatType.StandardEmote, 39);
+                AttemptRegister(ExChatType.TellIncoming, 537);
+                AttemptRegister(ExChatType.TellOutgoing, 537);
 
-                AttemptRegister(RetainerGainedExp, 31);
-                AttemptRegister(ObtainItemOrGil, 535);
-                AttemptRegister(LoggedOut, 39);
-                AttemptRegister(UseAction, 24);
+                AttemptRegister((ExChatType) XivChatType.Notice, 708);
+                AttemptRegister((ExChatType) XivChatType.Urgent, 508);
+
+                AttemptRegister(ExChatType.StandardEmotes, 39);
+
+                AttemptRegister(ExChatType.RetainerGainedExp, 31);
+                AttemptRegister(ExChatType.ObtainItemOrGil, 535);
+                AttemptRegister(ExChatType.LoggedOut, 39);
+                AttemptRegister(ExChatType.UseAction, 24);
 
                 //These don't have good mappings honestly?
-                AttemptRegister(GainStatus, 56);
-                AttemptRegister(LostStatus, 56);
+                AttemptRegister(ExChatType.GainStatus, 56);
+                AttemptRegister(ExChatType.LostStatus, 56);
             }
 
             this.Size = new Vector2(500, 400);
@@ -136,6 +154,35 @@ namespace EventChat
 
             this.chatTabs.Add(new ChatTab("All Chat", new()));
             this.chatTabs.Add(new ChatTabWithFilter("Event", new(), chat => chat.Entry.Type == Event));
+            this.chatTabs.Add(new ChatTabWithTypeFilter(
+                "General",
+                ExChatType.Say,
+                ExChatType.Yell,
+                ExChatType.Shout,
+                ExChatType.TellIncoming,
+                ExChatType.TellOutgoing,
+                ExChatType.Party,
+                ExChatType.Alliance,
+                ExChatType.FreeCompany,
+                ExChatType.CrossWorldLinkshell1,
+                ExChatType.CrossWorldLinkshell2,
+                ExChatType.CrossWorldLinkshell3,
+                ExChatType.CrossWorldLinkshell4,
+                ExChatType.CrossWorldLinkshell5,
+                ExChatType.CrossWorldLinkshell6,
+                ExChatType.CrossWorldLinkshell7,
+                ExChatType.CrossWorldLinkshell8,
+                ExChatType.Linkshell1,
+                ExChatType.Linkshell2,
+                ExChatType.Linkshell3,
+                ExChatType.Linkshell4,
+                ExChatType.Linkshell5,
+                ExChatType.Linkshell6,
+                ExChatType.Linkshell7,
+                ExChatType.Linkshell8,
+                ExChatType.NoviceNetwork,
+                ExChatType.StandardEmotes,
+                ExChatType.CustomEmotes));
         }
 
         public void Dispose()
@@ -155,7 +202,7 @@ namespace EventChat
             };
 
             var payloads = this.ProcessChatEntry(chatEntry);
-            var chat = new XivChatEntryWithPayloads(chatEntry, payloads);
+            var chat = new XivChatEntryWithPayloads(chatEntry, payloads, (ExChatType) type);
             this.chatLog.Add(chat);
 
             foreach (var chatTab in this.chatTabs)
@@ -283,9 +330,9 @@ namespace EventChat
         public IChatDisplayPayload[] ProcessChatEntry(XivChatEntry chat)
         {
             var payloads = new List<IChatDisplayPayload>();
-            var colour = this.messageColours.GetValueOrDefault(chat.Type, null) ??
+            var colour = this.messageColours.GetValueOrDefault((ExChatType) chat.Type, null) ??
                          chat.Type.DefaultColourAsVector4();
-            payloads.AddTypeBeginningPayload(chat.Type, colour);
+            payloads.AddTypeBeginningPayload((ExChatType) chat.Type, colour);
 
             switch (chat.Type)
             {
@@ -448,7 +495,7 @@ namespace EventChat
                     break;
             }
 
-            payloads.AddTypeEndingPayload(chat.Type, colour);
+            payloads.AddTypeEndingPayload((ExChatType) chat.Type, colour);
 
             return payloads.ToArray();
         }
@@ -479,6 +526,22 @@ namespace EventChat
                         }
                     }
                 });
+            }
+        }
+
+        private void Refilter(ChatTab tab)
+        {
+            lock (this.renderLock)
+            {
+                tab.ChatLog.Clear();
+
+                foreach (var entry in this.chatLog)
+                {
+                    if (tab.ShouldAdd(entry))
+                    {
+                        tab.Add(entry);
+                    }
+                }
             }
         }
 
@@ -587,7 +650,8 @@ namespace EventChat
                                 }
                             }
 
-                            this.filteredChat.Add(new XivChatEntryWithPayloads(chat.Entry, payloads.ToArray()));
+                            this.filteredChat.Add(new XivChatEntryWithPayloads(chat.Entry, payloads.ToArray(),
+                                chat.Type));
                         }
                     });
 
@@ -599,7 +663,123 @@ namespace EventChat
 
         private void DrawTabEdit(ChatTab tab)
         {
-            
+            ImGui.InputText("Chat Tab", ref tab.Name, 32);
+
+            switch (tab)
+            {
+                case ChatTabWithTypeFilter typedChatTab:
+                    this.DrawEditTypedChatTab(typedChatTab);
+                    break;
+            }
+        }
+
+        private void DrawEditTypedChatTab(ChatTabWithTypeFilter tab)
+        {
+            (ExChatType type, ExChatTypeAttribute? attr)? hovered = null;
+            var refilter = false;
+
+            foreach (var (name, types) in XivChatTypes.TypeGroups)
+            {
+                ImGuiChatHelpers.BeginGroupPanel(name, new Vector2(16, 16));
+
+                foreach (var type in types)
+                {
+                    ImGui.BeginGroup();
+                    var attr = type.ExChatAttribute();
+                    bool filterEnabled = tab.AcceptedTypes.Contains(type);
+                    Vector4 color = tab.ChatColours.GetValueOrDefault(type, null) ?? Vector4.Zero;
+
+                    if (color != Vector4.Zero)
+                    {
+                        ImGui.PushStyleColor(ImGuiCol.Text, color);
+                    }
+
+                    if (ImGui.Checkbox(attr?.DisplayName ?? ((int) type).ToString(), ref filterEnabled))
+                    {
+                        refilter = true;
+
+                        if (filterEnabled)
+                        {
+                            tab.AcceptedTypes.Add(type);
+                        }
+                        else
+                        {
+                            tab.AcceptedTypes.Remove(type);
+                        }
+                    }
+
+                    if (color != Vector4.Zero)
+                    {
+                        ImGui.PopStyleColor();
+                    }
+
+                    ImGui.EndGroup();
+
+                    if (ImGui.IsItemHovered())
+                    {
+                        var desc = attr?.Description;
+                        if (desc != null) ImGui.SetTooltip(desc);
+
+                        hovered = (type, attr);
+                    }
+
+                    if (ImGui.BeginPopupContextItem($"##Type{type}"))
+                    {
+                        var enabled = color != Vector4.Zero;
+
+                        if (ImGui.Checkbox("Custom Colour", ref enabled))
+                        {
+                            if (!enabled)
+                            {
+                                tab.ChatColours.Remove(type);
+                            }
+                            else
+                            {
+                                color = this.messageColours.GetValueOrDefault(type) ?? new Vector4(1f, 1f, 1f, 1f);
+                                tab.ChatColours[type] = color;
+                            }
+                        }
+
+                        if (enabled)
+                        {
+                            if (ImGui.ColorPicker4(
+                                    $"###ColorPicker{type}",
+                                    ref color,
+                                    ImGuiColorEditFlags.NoSmallPreview | ImGuiColorEditFlags.NoSidePreview |
+                                    ImGuiColorEditFlags.AlphaPreview))
+                            {
+                                tab.ChatColours[type] = color;
+                            }
+                        }
+
+                        ImGui.EndPopup();
+                    }
+                }
+
+                ImGuiChatHelpers.EndGroupPanel();
+            }
+
+            ImGuiChatHelpers.BeginGroupPanel("Info", new Vector2(16, 16));
+
+            if (hovered != null)
+            {
+                var colour = tab.ChatColours.GetValueOrDefault(hovered.Value.type, null) ??
+                             this.messageColours.GetValueOrDefault(hovered.Value.type, null);
+                if (colour != null)
+                {
+                    ImGui.PushStyleColor(ImGuiCol.Text, colour.Value);
+                    ImGui.Text(hovered?.attr?.Example ?? string.Empty);
+                    ImGui.PopStyleColor();
+                }
+                else
+                {
+                    ImGui.Text(hovered?.attr?.Example ?? string.Empty);
+                }
+            }
+
+            ImGuiChatHelpers.EndGroupPanel();
+
+            if (refilter) this.Refilter(tab);
         }
 
         public override void Draw()
@@ -690,21 +870,17 @@ namespace EventChat
             {
                 for (int i = 0; i < this.chatTabs.Count; i++)
                 {
-                    var flags = ImGuiTabItemFlags.None;
                     var tab = this.chatTabs[i];
 
-                    if (ImGui.BeginTabItem(tab.Name, ref tab.isOpen, flags))
+                    if (ImGui.BeginTabItem(tab.Name, ref tab.isOpen))
                     {
                         this.selectedTab = i;
                         ImGui.EndTabItem();
                     }
 
-                    if (ImGui.BeginPopupContextItem())
+                    if (ImGui.BeginPopupContextItem($"##Tab{i}"))
                     {
-                        if (ImGui.Selectable("Edit"))
-                        {
-                            this.DrawTabEdit(tab);
-                        }
+                        this.DrawTabEdit(tab);
 
                         ImGui.EndPopup();
                     }

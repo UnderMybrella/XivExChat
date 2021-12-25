@@ -9,9 +9,9 @@ namespace EventChat
     public class ChatTab
     {
         public List<XivChatEntryWithPayloads> ChatLog = new();
-        public Dictionary<XivChatType, Vector4?> ChatColours = new();
+        public Dictionary<ExChatType, Vector4?> ChatColours = new();
         
-        public string Name;
+        public string Name = string.Empty;
         public bool isOpen = true;
 
         public ChatTab()
@@ -63,6 +63,48 @@ namespace EventChat
         public override bool ShouldAdd(XivChatEntryWithPayloads entry)
         {
             return this.Filter(entry);
+        }
+    }
+    
+    public class ChatTabWithTypeFilter : ChatTab
+    {
+        public HashSet<ExChatType> AcceptedTypes = new();
+
+        public ChatTabWithTypeFilter()
+        {
+        }
+
+        public ChatTabWithTypeFilter(string name)
+            : base(name)
+        {
+        }
+        
+        public ChatTabWithTypeFilter(string name, params ExChatType[] types)
+            : base(name)
+        {
+            this.AcceptedTypes = new HashSet<ExChatType>(types);
+        }
+
+        public ChatTabWithTypeFilter(string name, List<XivChatEntryWithPayloads> chatLog)
+            : base(name, chatLog)
+        {
+        }
+        
+        public ChatTabWithTypeFilter(string name, HashSet<ExChatType> acceptedTypes)
+            : base(name)
+        {
+            this.AcceptedTypes = acceptedTypes;
+        }
+        
+        public ChatTabWithTypeFilter(string name, List<XivChatEntryWithPayloads> chatLog, HashSet<ExChatType> acceptedTypes)
+            : base(name, chatLog)
+        {
+            this.AcceptedTypes = acceptedTypes;
+        }
+
+        public override bool ShouldAdd(XivChatEntryWithPayloads entry)
+        {
+            return this.AcceptedTypes.Contains(entry.Type);
         }
     }
 }
