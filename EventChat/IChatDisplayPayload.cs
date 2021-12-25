@@ -1,4 +1,6 @@
-﻿#pragma warning disable SA1402
+﻿using EventChat.Interface;
+
+#pragma warning disable SA1402
 namespace EventChat
 {
     using System;
@@ -46,6 +48,14 @@ namespace EventChat
         public void DisplayIn(ChatDisplay display, ChatTab inTab, ChatWindow inWindow)
         {
             display.ImGuiText(this.Text);
+        }
+    }
+    
+    public record ChatDisplayPayloadHover(IHoverPayload Payload) : IChatDisplayPayload
+    {
+        public void DisplayIn(ChatDisplay display, ChatTab inTab, ChatWindow inWindow)
+        {
+            display.HoverPayload = this.Payload;
         }
     }
 
@@ -176,6 +186,23 @@ namespace EventChat
             display.PopGlowColour();
         }
     }
+    
+    public sealed class ChatDisplayPayloadLinkTerminator : IChatDisplayPayload
+    {
+        private static readonly Lazy<ChatDisplayPayloadLinkTerminator> Lazy =
+            new(() => new());
+
+        public static ChatDisplayPayloadLinkTerminator Instance => Lazy.Value;
+
+        private ChatDisplayPayloadLinkTerminator()
+        {
+        }
+
+        public void DisplayIn(ChatDisplay display, ChatTab inTab, ChatWindow inWindow)
+        {
+            display.HoverPayload = null;
+        }
+    }
 
     public static class ChatPayloadExtensions
     {
@@ -197,6 +224,12 @@ namespace EventChat
 
         public static void AddTextPayload(this List<IChatDisplayPayload> list, string text) =>
             list.Add(new ChatDisplayPayloadText(text));
+
+        public static void AddTextHoverPayload(this List<IChatDisplayPayload> list, string hoverText) =>
+            list.Add(new ChatDisplayPayloadHover(new HoverPayloadText(hoverText)));
+        
+        public static void AddHoverPayload(this List<IChatDisplayPayload> list, IHoverPayload payload) =>
+            list.Add(new ChatDisplayPayloadHover(payload));
         
         public static void InsertTextPayload(this List<IChatDisplayPayload> list, int index, string text) =>
             list.Insert(index, new ChatDisplayPayloadText(text));
@@ -215,6 +248,9 @@ namespace EventChat
 
         public static void AddNewLinePayload(this List<IChatDisplayPayload> list) =>
             list.Add(ChatDisplayPayloadNewLine.Instance);
+        
+        public static void AddLinkTerminatorPayload(this List<IChatDisplayPayload> list) =>
+            list.Add(ChatDisplayPayloadLinkTerminator.Instance);
 
         public static void DisplayXivChatEntry(this ChatDisplay display, XivChatEntryWithPayloads chat, ChatTab inTab, ChatWindow inWindow)
         {

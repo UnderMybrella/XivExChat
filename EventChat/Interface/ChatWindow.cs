@@ -1,4 +1,6 @@
-﻿#nullable enable
+﻿using EventChat.Interface;
+
+#nullable enable
 namespace EventChat
 {
     using System;
@@ -87,7 +89,7 @@ namespace EventChat
                     Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)!,
                     $@"Resources\CONTROLLER_DPAD_DOWN.png"));
 
-            var colours = plugin.DataManager.GetExcelSheet<UIColor>();
+            var colours = EventChatPlugin.DataManager.GetExcelSheet<UIColor>();
             if (colours != null)
             {
                 void AttemptRegister(ExChatType type, uint rowId)
@@ -153,7 +155,6 @@ namespace EventChat
             this._plugin.ChatGui.ChatMessage += this.QueueMessage;
 
             this.chatTabs.Add(new ChatTab("All Chat", new()));
-            this.chatTabs.Add(new ChatTabWithFilter("Event", new(), chat => chat.Entry.Type == Event));
             this.chatTabs.Add(new ChatTabWithTypeFilter(
                 "General",
                 ExChatType.Say,
@@ -183,6 +184,115 @@ namespace EventChat
                 ExChatType.NoviceNetwork,
                 ExChatType.StandardEmotes,
                 ExChatType.CustomEmotes));
+            
+            this.chatTabs.Add(new ChatTabWithTypeFilter(
+                "Battle",
+                ExChatType.DamageDealtByYou,
+                ExChatType.FailedAttacksByYou,
+                ExChatType.ActionsInitiatedByYou,
+                ExChatType.ItemsUsedByYou,
+                ExChatType.ItemUsedByYouReady,
+                ExChatType.EffectsOfHealingSpellsCastByYou,
+                ExChatType.BeneficialEffectsGrantedByYou,
+                ExChatType.DetrimentalEffectsInflictedByYou,
+                ExChatType.DamageYouAreDealt,
+                ExChatType.FailedAttacksOnYou,
+                ExChatType.ActionsUsedOnYou,
+                ExChatType.ItemsUsedOnYou,
+                ExChatType.EffectsOfHealingSpellsCastOnYou,
+                ExChatType.BeneficialEffectsGrantedToYou,
+                ExChatType.DetrimentalEffectsInflictedOnYou,
+                ExChatType.BeneficialEffectsOnYouEnding,
+                ExChatType.DetrimentalEffectsOnYouEnding,
+                
+                ExChatType.DamageDealtByPartyMembers,
+                ExChatType.FailedAttacksByPartyMembers,
+                ExChatType.ActionsInitiatedByPartyMembers,
+                ExChatType.ItemsUsedByPartyMembers,
+                ExChatType.EffectsOfHealingSpellsCastByPartyMembers,
+                ExChatType.BeneficialEffectsGrantedByPartyMembers,
+                ExChatType.DetrimentalEffectsInflictedByPartyMembers,
+                ExChatType.DamagePartyMembersAreDealt,
+                ExChatType.FailedAttacksOnPartyMembers,
+                ExChatType.ActionsUsedOnPartyMembers,
+                ExChatType.ItemsUsedOnPartyMembers,
+                ExChatType.EffectsOfHealingSpellsCastOnPartyMembers,
+                ExChatType.BeneficialEffectsGrantedToPartyMembers,
+                ExChatType.DetrimentalEffectsInflictedOnPartyMembers,
+                ExChatType.BeneficialEffectsOnPartyMembersEnding,
+                ExChatType.DetrimentalEffectsOnPartyMembersEnding,
+                
+                ExChatType.DamageDealtByEngagedEnemies,
+                ExChatType.FailedAttacksByEngagedEnemies,
+                ExChatType.ActionsInitiatedByEngagedEnemies,
+                ExChatType.ItemsUsedByEngagedEnemies,
+                ExChatType.EffectsOfHealingSpellsCastByEngagedEnemies,
+                ExChatType.BeneficialEffectsGrantedByEngagedEnemies,
+                ExChatType.DetrimentalEffectsInflictedByEngagedEnemies,
+                ExChatType.DamageEngagedEnemiesAreDealt,
+                ExChatType.FailedAttacksOnEngagedEnemies,
+                ExChatType.ActionsUsedOnEngagedEnemies,
+                ExChatType.ItemsUsedOnEngagedEnemies,
+                ExChatType.EffectsOfHealingSpellsCastOnEngagedEnemies,
+                ExChatType.BeneficialEffectsGrantedToEngagedEnemies,
+                ExChatType.DetrimentalEffectsInflictedOnEngagedEnemies,
+                ExChatType.BeneficialEffectsOnEngagedEnemiesEnding,
+                ExChatType.DetrimentalEffectsOnEngagedEnemiesEnding,
+                
+                ExChatType.DamageDealtByFriendlyNPCs,
+                ExChatType.FailedAttacksByFriendlyNPCs,
+                ExChatType.ActionsInitiatedByFriendlyNPCs,
+                ExChatType.ItemsUsedByFriendlyNPCs,
+                ExChatType.EffectsOfHealingSpellsCastByFriendlyNPCs,
+                ExChatType.BeneficialEffectsGrantedByFriendlyNPCs,
+                ExChatType.DetrimentalEffectsInflictedByFriendlyNPCs,
+                ExChatType.DamageFriendlyNPCsAreDealt,
+                ExChatType.FailedAttacksOnFriendlyNPCs,
+                ExChatType.ActionsUsedOnFriendlyNPCs,
+                ExChatType.ItemsUsedOnFriendlyNPCs,
+                ExChatType.EffectsOfHealingSpellsCastOnFriendlyNPCs,
+                ExChatType.BeneficialEffectsGrantedToFriendlyNPCs,
+                ExChatType.DetrimentalEffectsInflictedOnFriendlyNPCs,
+                ExChatType.BeneficialEffectsOnFriendlyNPCsEnding,
+                ExChatType.DetrimentalEffectsOnFriendlyNPCsEnding,
+                
+                ExChatType.DamageDealtByPetsAndCompanions,
+                ExChatType.FailedAttacksByPetsAndCompanions,
+                ExChatType.ActionsInitiatedByPetsAndCompanions,
+                ExChatType.ItemsUsedByPetsAndCompanions,
+                ExChatType.EffectsOfHealingSpellsCastByPetsAndCompanions,
+                ExChatType.BeneficialEffectsGrantedByPetsAndCompanions,
+                ExChatType.DetrimentalEffectsInflictedByPetsAndCompanions,
+                ExChatType.DamagePetsAndCompanionsAreDealt,
+                ExChatType.FailedAttacksOnPetsAndCompanions,
+                ExChatType.ActionsUsedOnPetsAndCompanions,
+                ExChatType.ItemsUsedOnPetsAndCompanions,
+                ExChatType.EffectsOfHealingSpellsCastOnPetsAndCompanions,
+                ExChatType.BeneficialEffectsGrantedToPetsAndCompanions,
+                ExChatType.DetrimentalEffectsInflictedOnPetsAndCompanions,
+                ExChatType.BeneficialEffectsOnPetsAndCompanionsEnding,
+                ExChatType.DetrimentalEffectsOnPetsAndCompanionsEnding,
+                
+                ExChatType.DamageDealtByPartyMembersPetsAndCompanions,
+                ExChatType.FailedAttacksByPartyMembersPetsAndCompanions,
+                ExChatType.ActionsInitiatedByPartyMembersPetsAndCompanions,
+                ExChatType.ItemsUsedByPartyMembersPetsAndCompanions,
+                ExChatType.EffectsOfHealingSpellsCastByPartyMembersPetsAndCompanions,
+                ExChatType.BeneficialEffectsGrantedByPartyMembersPetsAndCompanions,
+                ExChatType.DetrimentalEffectsInflictedByPartyMembersPetsAndCompanions,
+                ExChatType.DamagePartyMembersPetsAndCompanionsAreDealt,
+                ExChatType.FailedAttacksOnPartyMembersPetsAndCompanions,
+                ExChatType.ActionsUsedOnPartyMembersPetsAndCompanions,
+                ExChatType.ItemsUsedOnPartyMembersPetsAndCompanions,
+                ExChatType.EffectsOfHealingSpellsCastOnPartyMembersPetsAndCompanions,
+                ExChatType.BeneficialEffectsGrantedToPartyMembersPetsAndCompanions,
+                ExChatType.DetrimentalEffectsInflictedOnPartyMembersPetsAndCompanions,
+                ExChatType.BeneficialEffectsOnPartyMembersPetsAndCompanionsEnding,
+                ExChatType.DetrimentalEffectsOnPartyMembersPetsAndCompanionsEnding,
+                
+                ExChatType.OwnBattleSystemMessages));
+            
+            this.chatTabs.Add(new ChatTabWithTypeFilter("Event", ExChatType.NPCDialogue));
         }
 
         public void Dispose()
@@ -236,7 +346,10 @@ namespace EventChat
 
                         break;
 
-                    case ItemPayload:
+                    case ItemPayload itemPayload:
+                        payloads.AddHoverPayload(new HoverPayloadItem(itemPayload.Item));
+                        break;
+                    
                     case MapLinkPayload:
                     case PlayerPayload:
                     case QuestPayload:
@@ -300,6 +413,7 @@ namespace EventChat
                         {
                             // Link Terminator
                             case 0x27:
+                                payloads.AddLinkTerminatorPayload();
                                 break;
 
                             // Seems to pop both glow and foreground?
@@ -677,7 +791,7 @@ namespace EventChat
 
         private void DrawEditTypedChatTab(ChatTabWithTypeFilter tab)
         {
-            (ExChatType Type, ExChatTypeAttribute? ttr)? hovered = null;
+            (ExChatType Type, ExChatTypeAttribute? Attr)? hovered = null;
             var refilter = false;
 
             if (ImGui.BeginCombo("##ChatGroups", this.selectedGroup.Name))
@@ -735,7 +849,7 @@ namespace EventChat
                     var desc = attr?.Description;
                     if (desc != null) ImGui.SetTooltip(desc);
 
-                    hovered = (Type: type, ttr: attr);
+                    hovered = (Type: type, Attr: attr);
                 }
 
                 if (ImGui.BeginPopupContextItem($"##Type{type}"))
@@ -794,12 +908,12 @@ namespace EventChat
                 if (colour != null)
                 {
                     ImGui.PushStyleColor(ImGuiCol.Text, colour.Value);
-                    ImGui.Text(hovered?.ttr?.Example ?? string.Empty);
+                    ImGui.Text(hovered?.Attr?.Example ?? string.Empty);
                     ImGui.PopStyleColor();
                 }
                 else
                 {
-                    ImGui.Text(hovered?.ttr?.Example ?? string.Empty);
+                    ImGui.Text(hovered?.Attr?.Example ?? string.Empty);
                 }
             }
 

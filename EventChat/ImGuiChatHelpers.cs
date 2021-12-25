@@ -1,6 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Numerics;
+using Dalamud.Game.Text.SeStringHandling;
+using Dalamud.Game.Text.SeStringHandling.Payloads;
+using EventChat.Interface;
 using ImGuiNET;
 
 namespace EventChat
@@ -89,16 +93,16 @@ namespace EventChat
 
             var contentRegionMax = ImGui.GetWindowContentRegionMax();
             contentRegionMax.X -= frameHeight * .5f;
-            
+
             var workRect = ImGui.GetWindowViewport().WorkSize;
             workRect.X -= frameHeight * .5f;
-            
+
             var windowSize = ImGui.GetWindowSize();
             windowSize.X -= frameHeight;
-            
+
             var itemWidth = ImGui.CalcItemWidth();
             ImGui.PushItemWidth(itemWidth);
-            
+
             // ImGui.SetCursorPos(cursorPos);
 
             _groupPanelLabelStack.Add(new Vector4(labelMin.X, labelMin.Y, labelMax.X, labelMax.Y));
@@ -170,13 +174,13 @@ namespace EventChat
                             true);
                         break;
                 }
-                
+
                 ImGui.GetWindowDrawList().AddRect(
                     new Vector2(frameRect.X, frameRect.Y),
                     new Vector2(frameRect.Z, frameRect.W),
                     (*ImGui.GetStyleColorVec4(ImGuiCol.Border)).AsRGBAColour(),
                     halfFrame.X);
-                        
+
                 ImGui.PopClipRect();
             }
 
@@ -196,7 +200,7 @@ namespace EventChat
 
             var workRect = ImGui.GetWindowViewport().WorkSize;
             workRect.X += frameHeight * .5f;
-            
+
             var windowSize = ImGui.GetWindowSize();
             windowSize.X += frameHeight;
 
@@ -223,6 +227,122 @@ namespace EventChat
                     ImGui.GetItemRectMax() + padding,
                     borderColour);
             }
+        }
+
+        public static void DisplaySeString(SeString str)
+        {
+            var stack = new List<Vector4?>();
+
+            void Text(string str)
+            {
+                var last = stack.LastOrDefault();
+
+                SameLineNoSpace();
+                if (last != null)
+                {
+                    ImGui.PushStyleColor(ImGuiCol.Text, last.Value);
+                    ImGui.TextUnformatted(str);
+                    ImGui.PopStyleColor();
+                }
+                else
+                {
+                    ImGui.TextUnformatted(str);
+                }
+            }
+
+            str.Payloads.ForEach(raw =>
+            {
+                switch (raw)
+                {
+                    case AutoTranslatePayload autoTranslatePayload:
+                        Text(autoTranslatePayload.Text);
+                        break;
+
+                    case EmphasisItalicPayload italicsPayload:
+                        break;
+
+                    case IconPayload iconPayload:
+                        // ImGui.Image(iconPayload.Icon.);
+                        // payloads.AddIconPayload(this._iconTest,
+                        //     new Vector2(this._iconTest.Width, this._iconTest.Height));
+                        Text($" [{Enum.GetName(iconPayload.Icon) ?? iconPayload.Icon.ToString()}] ");
+
+                        break;
+
+                    case ItemPayload itemPayload:
+                    case MapLinkPayload:
+                    case PlayerPayload:
+                    case QuestPayload:
+                    case StatusPayload:
+                        break;
+
+                    case NewLinePayload:
+                        ImGui.NewLine();
+                        break;
+
+                    case SeHyphenPayload hyphenPayload:
+                        Text(hyphenPayload.Text);
+                        break;
+
+                    case TextPayload textPayload:
+                        var lines = textPayload.Text.Replace(".", ".\n").Split('\n', StringSplitOptions.TrimEntries);
+                        for (int i = 0; i < lines.Length - 1; i++)
+                        {
+                            Text(lines[i]);
+                            ImGui.NewLine();
+                        }
+
+                        Text(lines.Last());
+
+                        break;
+
+                    case UIForegroundPayload foregroundPayload:
+                        if (foregroundPayload.IsEnabled)
+                        {
+                            stack.Add(foregroundPayload.UIColor.UiForegroundAsVector4());
+                        }
+                        else
+                        {
+                            var count = stack.Count;
+                            if (count > 0) stack.RemoveAt(count - 1);
+                        }
+
+                        break;
+
+                    case UIGlowPayload glowPayload:
+                        break;
+
+                    case RawPayload:
+                        var chunkType = raw.Encode();
+                        switch (chunkType[1])
+                        {
+                            // Link Terminator
+                            case 0x27:
+                                break;
+
+                            // Seems to pop both glow and foreground?
+                            case 0x13:
+                                var count = stack.Count;
+                                if (count > 0) stack.RemoveAt(count - 1);
+
+                                break;
+
+                            //Space??
+                            case 0x1D:
+                                Text(" ");
+                                break;
+
+                            default:
+                                Text($"{{{raw.ToString()}}}");
+                                break;
+                        }
+
+                        break;
+                    default:
+                        Text($"[{raw.ToString()}]");
+                        break;
+                }
+            });
         }
     }
 }

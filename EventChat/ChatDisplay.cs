@@ -1,4 +1,7 @@
-﻿namespace EventChat
+﻿using EventChat.Interface;
+
+#nullable enable
+namespace EventChat
 {
     using System.Collections.Generic;
     using System.Numerics;
@@ -6,25 +9,29 @@
 
     public class ChatDisplay
     {
+        public bool Italics = false;
+        public IHoverPayload? HoverPayload = null;
+
         private List<Vector4> foregroundStack = new List<Vector4>();
         private List<Vector4> backgroundStack = new List<Vector4>();
         private List<Vector4> glowStack = new List<Vector4>();
-        private bool italics = false;
 
         public void Clear()
         {
+            this.Italics = false;
+            this.HoverPayload = null;
+            
             this.foregroundStack.Clear();
             this.backgroundStack.Clear();
             this.glowStack.Clear();
-            this.italics = false;
         }
-        
+
         public Vector4? ForegroundColour()
         {
             var count = this.foregroundStack.Count;
             return count == 0 ? null : this.foregroundStack[count - 1];
         }
-        
+
         public Vector4? BackgroundColour()
         {
             var count = this.backgroundStack.Count;
@@ -41,7 +48,7 @@
         {
             this.foregroundStack.Add(colour);
         }
-        
+
         public void PushBackgroundColour(Vector4 colour)
         {
             this.backgroundStack.Add(colour);
@@ -60,7 +67,7 @@
                 this.foregroundStack.RemoveAt(count - 1);
             }
         }
-        
+
         public void PopBackgroundColour()
         {
             var count = this.backgroundStack.Count;
@@ -84,6 +91,8 @@
             ImGuiChatHelpers.SameLineNoSpace();
             var foreground = this.ForegroundColour();
             var background = this.BackgroundColour();
+            
+            ImGui.BeginGroup();
 
             if (background != null) ImGuiChatHelpers.DrawTextBackground(text, background.Value.AsRGBAColour());
 
@@ -97,6 +106,13 @@
             {
                 ImGui.TextUnformatted(text);
             }
+            
+            ImGui.EndGroup();
+            
+                if (ImGui.IsItemHovered())
+                {
+                    this.HoverPayload?.DrawIn(this);
+                }
         }
     }
 }

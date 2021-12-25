@@ -21,11 +21,11 @@ namespace EventChat
 
     public class EventChatPlugin : IDalamudPlugin, IDisposable
     {
+        [PluginService] internal static DataManager DataManager { get; private set; }
+        
         [PluginService] internal DalamudPluginInterface DalamudPluginInterface { get; private set; }
         [PluginService] internal ChatGui ChatGui { get; private set; }
         [PluginService] internal GameGui GameGui { get; private set; }
-
-        [PluginService] internal DataManager DataManager { get; private set; }
 
         [PluginService] internal CommandManager CommandManager { get; private set; }
         public ChatManager ChatManager { get; private set; }
